@@ -178,6 +178,7 @@ class StartupTest:
         self.browser = options.browser
         self.url = options.url
         self.readlen = options.read_length
+        self.installedFennec = None
 
         # TODO: Probably should be a python logger
         # This is a method that is called: log(msg, isError=False)
@@ -204,6 +205,15 @@ class StartupTest:
 
             # Copy our runscript into place
             self.log(self._run_adb("push", [self.script, self.testroot]))
+
+            # If we have an apk to install we should do that
+            # NOTE: We are expressly only set up to install org.mozilla.fennec, not 
+            # user built fennecs. (i.e. org.mozilla.fennec_<username>)
+            if self.apk:
+                # Uninstall previous version
+                self.log(self._run_adb("uninstall", ["org.mozilla.fennec"]))
+                self.log(self._run_adb("install", [self.apk]))
+                self.installedFennec = "org.mozilla.fennec"
 
         except Exception as e:
             self.log("Failed to prepare phone due to %s" % e, isError=True)
@@ -244,13 +254,17 @@ class StartupTest:
                 sys.exit(1)
 
             # We will now return to the settings screen (remember our flash
-            # from earlier?  So go back to the home screen - the key code
+            # from earlier?)  So go back to the home screen - the key code
             # for the home button is 3
             self.log(self._run_adb("shell", ["input", "keyevent", "3"]))
 
             # Pause for pause length now, to let GC's finish
             # TODO: can we cause a system GC ourselves?
             sleep(self.pauselen)
+        
+        # If we installed a fennec, uninstall it
+        if self.installedFennec:
+            self.log(self._run_adb("uninstall", [self.installedFennec]))
 
     # cmd must be an array!
     def _run_adb(self, adbcmd, cmd, inshell=False):
