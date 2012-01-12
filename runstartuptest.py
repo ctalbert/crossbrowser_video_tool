@@ -238,14 +238,14 @@ class StartupTest:
             # and we hold it for flashlen seconds
             self.log(self._run_adb("shell", ["am", "start", "-a",
                     "android.intent.action.MAIN", "-n", "com.android.settings/.Settings"]))
-            sleep(self.flashlen)
+            sleep(float(self.flashlen))
 
             # Run the browser
             self.log(self._run_adb("shell", browsercmd))
 
             # Reading Delay - let the numbers be displayed long enough on video
             # to be read.
-            sleep(self.readlen)
+            sleep(float(self.readlen))
 
             # Kill the browser - we use the devicemanagerADB for this because it's
             # easier than re-writing all that code
@@ -260,7 +260,7 @@ class StartupTest:
 
             # Pause for pause length now, to let GC's finish
             # TODO: can we cause a system GC ourselves?
-            sleep(self.pauselen)
+            sleep(float(self.pauselen))
         
         # If we installed a fennec, uninstall it
         if self.installedFennec:
