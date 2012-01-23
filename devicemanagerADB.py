@@ -289,7 +289,7 @@ class DeviceManagerADB(DeviceManager):
     for (pid, name, user) in procs:
       if name == appname:
         p = self.runCmdAs(["shell", "kill", pid])
-        return p.stdout.read()
+        return "killed: " + p.stdout.read()
     return None
 
   # external function
